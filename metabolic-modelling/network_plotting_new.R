@@ -109,3 +109,25 @@ write.csv(network_af[[1]], file="network_fluxes_af.csv")
 write.csv(network_apf[[1]], file="network_fluxes_apf.csv")
 write.csv(network_mouse[[1]], file="network_fluxes_mouse.csv")
 
+#network fluxes with compound names
+network_fluxes_af <- network_af[[1]] %>% 
+  separate_wider_delim(met, delim = "_", names = c("EX", "compound", "c0"), cols_remove = FALSE)%>%
+  mutate(EX = NULL) %>% mutate(c0=NULL)%>%
+  left_join(gapseq_compounds, by = c('compound' = 'id'))%>%
+  mutate(MNX_ID = NULL)%>% select(name, formula, charge, compound, sim_step, prod, cons, prod.flux, cons.flux)
+write.csv(network_fluxes_af, file="network_fluxes_af_named.csv")
+
+network_fluxes_apf <- network_apf[[1]] %>% 
+  separate_wider_delim(met, delim = "_", names = c("EX", "compound", "c0"), cols_remove = FALSE)%>%
+  mutate(EX = NULL) %>% mutate(c0=NULL)%>%
+  left_join(gapseq_compounds, by = c('compound' = 'id'))%>%
+  mutate(MNX_ID = NULL)%>% select(name, formula, charge, compound, sim_step, prod, cons, prod.flux, cons.flux)
+write.csv(network_fluxes_apf, file="network_fluxes_apf_named.csv")
+
+network_fluxes_mouse <- network_mouse[[1]] %>% 
+  separate_wider_delim(met, delim = "_", names = c("EX", "compound", "c0"), cols_remove = FALSE)%>%
+  mutate(EX = NULL) %>% mutate(c0=NULL)%>%
+  left_join(gapseq_compounds, by = c('compound' = 'id'))%>%
+  mutate(MNX_ID = NULL)%>% select(name, formula, charge, compound, sim_step, prod, cons, prod.flux, cons.flux)
+write.csv(network_fluxes_mouse, file="network_fluxes_mouse_named.csv")
+
