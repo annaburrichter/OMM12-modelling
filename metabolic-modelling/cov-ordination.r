@@ -64,7 +64,6 @@ ggplot(jaccard_dt, aes(x = cond, y = 1-jaccard)) +
     theme(axis.text.x = element_text(size = 10, angle = 45, hjust = 1))
 ggsave("img/core-rxn_similarity.pdf", width = 4, height = 3)
 ggsave("img/core-rxn_similarity.png", width = 4, height = 3)
-compare_means(jaccard ~ cond, jaccard_dt)
 
 
 # jaccard distance within conditions
@@ -80,8 +79,8 @@ for (c in unique(rxn_dist_dt$condition)) {
     }
 }
 jaccard_dt2[, cmp := paste0(org1, " vs. ", org2)]
-jaccard_dt2[,cond2:=factor(ifelse(cond%in%c("AF", "APF"), "vitro", cond), levels=c("mono", "vitro", "mouse"), ordered=T)]
-ggplot(jaccard_dt2, aes(x = cond2, y = 1-jaccard2)) +
+jaccard_dt2[,cond2:=factor(ifelse(cond=="AF", "vitro (AF)", cond), levels=c("mono", "vitro (AF)", "mouse"), ordered=T)]
+ggplot(jaccard_dt2[cond!="APF"], aes(x = cond2, y = 1-jaccard2)) +
     geom_boxplot() +
     ylab("Dissimilarity (Jaccard)") + scale_y_continuous(expand = expansion(mult = c(0, 0.1)), breaks=c(0,0.25,0.5,0.75,1)) + 
     xlab("") +
@@ -162,11 +161,11 @@ dist_sel <- dist_melt[(condition1=="mono" & condition2=="AF") |
                       (condition1=="mouse" & condition2=="AF") |
                       (condition1=="mouse" & condition2=="APF") |
                       (condition1=="AF" & condition2=="APF")]
-dist_sel[condition=="mono-AF", condition_new:="mono vs. vitro"]
-dist_sel[condition=="mono-APF", condition_new:="mono vs. vitro"]
+dist_sel[condition=="mono-AF", condition_new:="mono vs. vitro (AF)"]
+#dist_sel[condition=="mono-APF", condition_new:="mono vs. vitro"]
 dist_sel[condition=="mono-mouse", condition_new:="mono vs. vivo"]
-dist_sel[condition=="mouse-AF", condition_new:="vivo vs. vitro"]
-dist_sel[condition=="mouse-APF", condition_new:="vivo vs. vitro"]
+#dist_sel[condition=="mouse-AF", condition_new:="vivo vs. vitro"]
+dist_sel[condition=="mouse-APF", condition_new:="vivo vs. vitro (APF)"]
 ggplot(dist_sel[!is.na(condition_new)], aes(x=condition_new,y=dist)) + geom_boxplot() + theme_bw(base_size=14) + 
   stat_compare_means(label = "p.signif", method = "wilcox", comparisons = as.list(as.data.frame(combinat::combn(1:3,2)))) +
   theme(axis.text.x = element_text(size=10, angle = 45, hjust = 1)) + xlab("") + ylab("Distance (Euclidian)") + 
